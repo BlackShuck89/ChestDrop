@@ -29,6 +29,8 @@ jobs:
           node --check popup.js
           node tests/test.js
           node tests/test-options.js
+      - name: Check Firefox privacy and data consent manifest
+        run: node scripts/check_manifest.js
       - name: Generate mimic artwork icons
         run: |
           python -m pip install --disable-pip-version-check cairosvg
