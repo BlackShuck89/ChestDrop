@@ -20,6 +20,10 @@ def main():
         cairosvg.svg2png(url=str(SOURCE), write_to=str(dest),
                          output_width=size, output_height=size)
         print(f"Generated {dest.relative_to(ROOT)}")
+    master = ROOT / "branding" / "icon-master-512.png"
+    cairosvg.svg2png(url=str(SOURCE), write_to=str(master),
+                     output_width=512, output_height=512)
+    print(f"Generated {master.relative_to(ROOT)}")
 
 if __name__ == "__main__":
     main()
