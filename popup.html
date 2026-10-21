@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ChestDrop</title>
+  <link rel="icon" type="image/png" href="icons/icon-32.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="popup-page">
+  <main class="popup-shell">
+    <header class="popup-header"><img src="icons/icon-48.png" alt="" width="44" height="44"><div><p class="eyebrow">ImgChest uploader</p><h1><span class="brand-word">Chest<span>Drop</span></span></h1></div></header>
+    <div id="connection-state" class="connection-state">Checking settings…</div>
+    <p class="intro">Right-click an image and select <strong>Upload image to ImgChest</strong>.</p>
+    <button id="upload-tab" class="primary-button full-button">Upload image in current tab</button>
+    <p id="upload-state" class="status-line" aria-live="polite"></p>
+    <section class="last-upload"><div class="section-title">Most recent upload</div><p id="last-upload-empty">No uploads yet.</p><a id="last-upload-link" hidden href="#" target="_blank" rel="noopener noreferrer"></a></section>
+    <div class="popup-actions"><button id="settings" type="button" class="secondary-button">Settings</button><a href="https://imgchest.com" target="_blank" rel="noopener noreferrer">ImgChest ↗</a></div>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>
