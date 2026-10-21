@@ -65,7 +65,7 @@
     }
     for (const field of BACKUP_FIELDS) {
       if (!Object.prototype.hasOwnProperty.call(settings, field)) {
-        throw new Error(\`The backup is missing \${field}.\`);
+        throw new Error(`The backup is missing ${field}.`);
       }
     }
     if (typeof settings.apiUsername !== "string" ||
@@ -80,7 +80,7 @@
     }
     for (const field of ["nsfw", "screenshotFallback", "useFilenameAsTitle"]) {
       if (typeof settings[field] !== "boolean") {
-        throw new Error(\`The backup contains an invalid \${field} setting.\`);
+        throw new Error(`The backup contains an invalid ${field} setting.`);
       }
     }
     const restored = {
@@ -167,7 +167,7 @@
     if (typeof id !== "string" || !/^[A-Za-z0-9_-]{4,64}$/.test(id)) {
       throw new Error("ImgChest did not return a valid post ID.");
     }
-    return \`https://imgchest.com/p/\${id}\`;
+    return `https://imgchest.com/p/${id}`;
   }
 
   function apiError(json, status, retryAfter) {
@@ -177,9 +177,9 @@
       if (first) message = first;
     }
     if (status === 401 || status === 403) return "API token rejected. Check or replace it in Settings.";
-    if (status === 429) return \`ImgChest rate limit reached.\${retryAfter ? \` Retry after \${retryAfter} seconds.\` : " Try again shortly."}\`;
+    if (status === 429) return `ImgChest rate limit reached.${retryAfter ? ` Retry after ${retryAfter} seconds.` : " Try again shortly."}`;
     if (status === 413) return "ImgChest rejected the upload because it is too large.";
-    if (!message) message = \`ImgChest API returned HTTP \${status}.\`;
+    if (!message) message = `ImgChest API returned HTTP ${status}.`;
     return message.slice(0, 250);
   }
 
