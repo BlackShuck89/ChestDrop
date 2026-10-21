@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ChestDrop — Settings</title>
+  <link rel="icon" type="image/png" href="icons/icon-32.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="settings-page">
+  <main class="settings-shell">
+    <header class="hero">
+      <img class="brand-icon" src="icons/icon-96.png" alt="" width="64" height="64">
+      <div>
+        <p class="eyebrow">Firefox image uploader</p>
+        <h1><span class="brand-word">Chest<span>Drop</span></span> <span class="page-title">Settings</span></h1>
+        <p>One right click. One ImgChest post.</p>
+      </div>
+    </header>
+    <form id="settings-form" autocomplete="off">
+      <section class="panel">
+        <div class="panel-heading"><span class="step">01</span><div><h2>API connection</h2><p>Personal access token, kept in this Firefox profile.</p></div></div>
+        <label for="api-token" class="form-label">ImgChest personal access token</label>
+        <div class="input-with-action">
+          <input id="api-token" type="password" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" placeholder="Paste your API token" aria-describedby="token-help">
+          <button id="toggle-token" type="button" class="quiet-button" aria-pressed="false">Show</button>
+        </div>
+        <label for="api-username" class="form-label username-label">ImgChest username (optional, for an alternate token check)</label>
+        <input id="api-username" type="text" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" placeholder="Your ImgChest username" aria-describedby="username-help">
+        <p class="footnote" id="username-help">If ImgChest's current-user endpoint returns 404, ChestDrop can check your own profile instead. This is read-only and does not create a post.</p>
+        <div class="inline-tools">
+          <button type="button" id="test-token" class="secondary-button">Test API key</button>
+          <a href="https://imgchest.com/docs/api/1.0/general/authorization" target="_blank" rel="noopener noreferrer">How to create a token ↗</a>
+        </div>
+        <p class="footnote" id="token-help">Only sent in an Authorization header to api.imgchest.com when you test or upload. Not synchronized through Firefox Sync.</p>
+      </section>
+      <section class="panel">
+        <div class="panel-heading"><span class="step">02</span><div><h2>After uploading</h2><p>Choose what Firefox does when ImgChest creates the post.</p></div></div>
+        <div class="choice-stack" role="radiogroup" aria-label="Post upload tab behavior">
+          <label class="choice"><input type="radio" name="openBehavior" value="foreground"><span><strong>Open post and switch to it</strong><small>New active tab — default</small></span></label>
+          <label class="choice"><input type="radio" name="openBehavior" value="background"><span><strong>Open post in a background tab</strong><small>Keep browsing your current tab</small></span></label>
+          <label class="choice"><input type="radio" name="openBehavior" value="none"><span><strong>Don't open a tab</strong><small>Show notification and save the last post link in the toolbar popup</small></span></label>
+        </div>
+      </section>
+      <section class="panel">
+        <div class="panel-heading"><span class="step">03</span><div><h2>Post defaults</h2><p>Settings applied to each new single-image post.</p></div></div>
+        <label for="privacy" class="form-label">Post visibility</label>
+        <select id="privacy"><option value="hidden">Hidden — accessible by link (default)</option><option value="public">Public — visible on ImgChest</option><option value="secret">Secret — only for your account</option></select>
+        <label for="rating" class="form-label rating-label">Default content rating</label>
+        <select id="rating" aria-describedby="rating-help"><option value="sfw">SFW — Safe for work (default)</option><option value="nsfw">NSFW — Not safe for work</option></select>
+        <p id="rating-help" class="footnote rating-help">Applied to every new ImgChest upload. This is separate from post visibility.</p>
+        <label class="switch-row"><input id="use-filename" type="checkbox"><span><strong>Use original filename as post title</strong><small>Example: beach-sunset.png → beach sunset</small></span></label>
+        <label class="switch-row"><input id="screenshot-fallback" type="checkbox"><span><strong>Discord screenshot fallback</strong><small>If an expired CDN URL cannot be retrieved and the browser won't release the original pixels, crop the fully visible image from the tab. It may be lower resolution or include overlays, and animations become static.</small></span></label>
+      </section>
+      <section class="panel backup-panel" aria-labelledby="backup-heading">
+        <div class="panel-heading"><span class="step">04</span><div><h2 id="backup-heading">Local settings backup</h2><p>Transfer your configuration when replacing a temporary extension build.</p></div></div>
+        <p class="backup-intro">Your settings are already saved in this Firefox profile. Regular extension upgrades retain them, but uninstalling a temporary add-on may erase them. Export a backup <strong>before</strong> removing ChestDrop.</p>
+        <label class="switch-row backup-token-row"><input id="backup-include-token" type="checkbox" checked><span><strong>Include my API token in the backup</strong><small>Enables a complete restore without re-entering your key. The downloaded JSON file contains the token in plain text. Store it securely and never share it.</small></span></label>
+        <div class="backup-actions">
+          <button type="button" id="export-settings" class="secondary-button">Export saved settings (.json)</button>
+          <button type="button" id="import-settings" class="secondary-button">Import settings (.json)</button>
+          <input id="import-file" type="file" accept=".json,application/json" hidden aria-label="Choose a ChestDrop settings backup file">
+        </div>
+        <p class="footnote">Export uses your last <strong>saved</strong> settings. Imported settings are saved immediately, and only configuration fields are restored (not upload history).</p>
+        <p id="backup-status" class="backup-status" role="status" aria-live="polite"></p>
+      </section>
+      <div class="save-footer"><div id="save-status" role="status" aria-live="polite"></div><button id="save" type="submit" class="primary-button">Save settings</button></div>
+    </form>
+    <footer class="settings-footer">ChestDrop v0.1.3 · Unofficial ImgChest client · No analytics or third-party libraries</footer>
+  </main>
+  <script src="shared.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>
