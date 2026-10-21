@@ -1,4 +1,4 @@
-# ChestDrop for ImgChest — v0.1.3
+# ChestDrop for ImgChest — v0.1.4
 
 An unofficial, Firefox-first, Manifest V3 right-click image uploader using the **official ImgChest API**. No build tools, bundled trackers, advertising, remote JavaScript, analytics, or external dependencies.
 
@@ -52,6 +52,12 @@ Discord signs many attachment URLs (`?ex=...&is=...&hm=...`). They eventually ex
 3. For a Discord CDN image that cannot be recovered from the page, optionally crop an **entirely visible** image from Firefox's foreground tab screenshot. This is only a last resort and may be reduced resolution, may include visual overlays, and does not retain animation. Enabled by default; disable this in Settings for original-only / pixel recovery.
 
 **Important:** The extension does **not** directly read Firefox's disk or memory cache via a special API. A decoded image that is still displayed can sometimes be recovered, but not always. If the image is neither recoverable from the rendered page nor from its still-valid URL, there is no guaranteed way to obtain the original bytes. Opening an image in its own tab often makes canvas recovery more likely to work. Some webpages prevent access to image contents; this tool does not bypass authentication or authorization.
+
+## Mozilla data-collection declaration
+
+From v0.1.4, `manifest.json` declares `authenticationInfo` and `websiteContent` in `browser_specific_settings.gecko.data_collection_permissions.required`. These categories cover the ImgChest API token and the specific image that you choose to upload. This does **not** mean background browsing surveillance or telemetry; ChestDrop transmits images only when you explicitly invoke an upload. See [Privacy notice](PRIVACY.md) for the complete disclosure.
+
+Firefox 140 or newer is required, so Mozilla can show its built-in consent prompts for data transmission. The Firefox extension ID remains unchanged to preserve user settings across in-place updates.
 
 ## Privacy, permissions, and security
 
