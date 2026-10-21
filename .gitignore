@@ -1,0 +1,7 @@
+*.xpi
+*.zip
+.DS_Store
+*.pem
+*.key
+*.token
+node_modules/
