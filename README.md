@@ -1,113 +1,123 @@
-# ChestDrop for ImgChest — v0.1.4
+<div align="center">
 
-An unofficial, Firefox-first, Manifest V3 right-click image uploader using the **official ImgChest API**. No build tools, bundled trackers, advertising, remote JavaScript, analytics, or external dependencies.
+<img src="branding/icon-master-512.png" alt="ChestDrop mimic treasure-chest mascot" width="144">
+
+# ChestDrop
+
+**Upload images to [ImgChest](https://imgchest.com/) directly from Firefox.**
+
+Right-click an image, choose **Upload image to ImgChest**, and ChestDrop handles the rest.
+
+[Features](#features) · [Installation](#installation) · [Getting started](#getting-started) · [Settings](#settings) · [Troubleshooting](#troubleshooting)
+
+</div>
+
+> [!NOTE]
+> **ChestDrop is currently a desktop Firefox extension (Firefox 140 or newer).** Version 0.1.4 is an early development release. The GitHub Actions builds are **unsigned** and intended for temporary testing; they are not permanently installable in standard Firefox until signed by Mozilla. Firefox for Android is not supported.
 
 ## Features
 
-- Right-click an image on a web page → **Upload image to ImgChest**.
-- Right-click an image shown alone in Firefox and upload it.
-- Choose the default SFW or NSFW label for each newly created post; stored locally and sent to ImgChest as the `nsfw` flag.
-- Original ChestDrop mimic-chest branding across the toolbar icons, popup and Settings.
-- Use the toolbar popup → **Upload image in current tab** for direct image tabs.
-- Support Discord CDN attachment image URLs when their original bytes can still be retrieved.
-- If a Discord URL has expired, try reading the already-displayed image's decoded pixels from a canvas; as a final option, crop the fully visible image from Firefox's screen capture. See limitations below.
-- Portable local settings **Export / Import JSON** backup (optional API token inclusion) for switching temporary builds.
-- Token settings, **Test API key** with a read-only username fallback for a 404 response, post visibility (hidden/public/secret), default content rating (SFW/NSFW), title option.
-- Upload result opens in a **foreground tab by default**, optionally in a **background tab** or no new tab.
-- Last uploaded post link in the toolbar popup.
-- Notifications on success and error.
+- **One-click image uploads:** Right-click almost any image on a website and select **Upload image to ImgChest**.
+- **Direct image tabs:** Open an image in its own browser tab and upload it through the ChestDrop toolbar popup.
+- **Discord CDN support:** Attempts to retrieve Discord-hosted images, including recovery from an image already visible in Firefox when its original link has expired. Recovery is best-effort, not guaranteed.
+- **Control post visibility:** Set the default to **Hidden**, **Public**, or **Secret**.
+- **Choose a content rating:** Mark new uploads **SFW** or **NSFW** by default.
+- **Pick what happens next:** Open the new post in an active tab, open it in a background tab, or don't open a tab at all.
+- **Optional post titles:** Turn filenames into titles automatically.
+- **Convenient settings:** Store your ImgChest API token locally, test the connection, and export/import your settings as a JSON backup.
+- **Recent upload link:** Reopen your latest ImgChest post from the toolbar popup.
 
-## Getting started (Firefox desktop)
+## Installation
 
-1. In ImgChest, log in and go to your profile **Security → Personal Access Tokens → New Token**. Save your token when it is shown; ImgChest won't display it again. See [ImgChest's token instructions](https://imgchest.com/docs/api/1.0/general/authorization).
-2. Open `about:debugging#/runtime/this-firefox` in Firefox.
-3. Click **Load Temporary Add-on**, choose the included `.xpi` file or this folder's `manifest.json`. The unsigned `.xpi` is **for temporary developer testing**, not regular permanent installation.
-4. Open ChestDrop Settings from the extension toolbar popup or **about:addons → ChestDrop → Preferences**.
-5. Paste your token, optionally enter your ImgChest username, click **Test API key**, choose your **Default content rating (SFW/NSFW)** and post behavior, and **Save settings**. If the documented current-user API returns HTTP 404, ChestDrop uses the username to check your own profile instead. A 404 is **not** treated as proof of an invalid key.
-6. Right-click an image → **Upload image to ImgChest**. A completed upload should open its post in a new active tab by default. The upload always uses your saved SFW/NSFW rating; SFW is the default unless you change it.
+### Development build (current distribution)
 
-**For permanent use:** Package/sign the extension through [addons.mozilla.org developer tools](https://addons.mozilla.org/developers/), or use a trusted self-distribution signing workflow. A normal Firefox release build generally will not permanently install an unsigned XPI. Temporary addons are removed on browser restart. You can also use Mozilla's `web-ext run` for development.
+1. Open the [GitHub Actions build page](https://github.com/BlackShuck89/ChestDrop/actions/workflows/check.yml) and select a successful **Verify and build ChestDrop** run.
+2. Under **Artifacts**, download **ChestDrop-unsigned** and extract the `.xpi` from the downloaded ZIP.
+3. In Firefox Desktop, open `about:debugging#/runtime/this-firefox`.
+4. Select **Load Temporary Add-on…**, then select the extracted `.xpi` file (or `manifest.json` from a downloaded source checkout).
 
-## Keeping settings when updating ChestDrop
+**Important:** Temporary add-ons are removed when Firefox restarts. For normal, persistent installation, ChestDrop must first be signed through Mozilla's add-on signing process. An unsigned XPI generally cannot be installed permanently in standard Firefox.
 
-ChestDrop already uses `browser.storage.local` for API token, username, post visibility, SFW/NSFW, upload tab behavior, screenshot recovery preference, and filename titles. The extension ID (`chestdrop-imgchest@extensions.local`) is kept unchanged in every update. **Signed updates installed in place keep these preferences automatically** without requiring any additional setup.
+You can also get the project source from **Code → Download ZIP** on this repository.
 
-**Temporary installations:** Uninstalling/removing a temporary build through `about:debugging` can clear Firefox extension data. Since a temporary build is removed at browser restart, use the backup to protect the settings.
+## Getting started
 
-1. In ChestDrop v0.1.3 or newer, open Settings → **Local settings backup**, then click **Export saved settings (.json)** **before** removing that build. Choose whether to include the API token. Use **Save settings** first if you have made unsaved changes in the form.
-2. Remove the old temporary extension and install the new build. Go to Settings → **Import settings (.json)**, select the downloaded file. Preferences are stored immediately and the settings page updates. There is no need to press Save again.
-3. Backups including the token are **plain-text JSON** and should be protected like passwords. Backup files are never automatically uploaded or synced. Backups omit the recent-upload history.
-4. You may exclude the token when exporting. On import, a missing token does *not* overwrite the currently configured API token.
+1. **Get your ImgChest API token.** Sign in to [ImgChest](https://imgchest.com/), find **Security → Personal Access Tokens**, and create a token. See [ImgChest's API token instructions](https://imgchest.com/docs/api/1.0/general/authorization). Keep the token private.
+2. **Open ChestDrop Settings.** Click the ChestDrop mimic icon in Firefox's toolbar and select **Settings**.
+3. **Enter the token**, choose your preferred visibility, SFW/NSFW rating, and tab behavior, then select **Save settings**. Your ImgChest username is optional and may help with token testing.
+4. **Upload an image.** Right-click an image on a page and choose **Upload image to ImgChest**.
 
-**Migrating from v0.1.2 before it has an Export button:** Firefox has developer-only preferences that can preserve extension storage between temporary installations: in `about:config`, set both `extensions.webextensions.keepStorageOnUninstall` and `extensions.webextensions.keepUuidOnUninstall` to `true` **before removing v0.1.2**. Then load the v0.1.3 build with the *same extension ID* in the same Firefox profile, verify its settings, and export a backup immediately. These preferences apply to extension uninstalls across that Firefox profile, not just ChestDrop; restore their prior values once migration is finished to avoid retaining other uninstalled extensions' private data unnecessarily. This is a testing workaround, not necessary for signed in-place updates. If settings were already erased, the extension cannot recover them automatically.
+By default, ChestDrop creates a **Hidden, SFW** post and opens the new ImgChest post in a foreground tab.
 
-The downloaded ZIP/XPI file is not a settings file. Don't store your API token inside extension source code or its XPI archive.
+### Uploading an image opened in its own tab
 
-## Discord CDN / image cache notes
+Open the image URL in Firefox, click the **ChestDrop toolbar icon**, and select **Upload image in current tab**.
 
-Discord signs many attachment URLs (`?ex=...&is=...&hm=...`). They eventually expire, but the browser may continue displaying the already-loaded image. ChestDrop tries three methods **in order**:
+![ChestDrop mimic icon](branding/icon-master-512.png)
 
-1. Fetch original bytes directly with Firefox extension host access, keeping the original file and animation when possible.
-2. When the image element is available, attempt same-origin file reads or canvas pixel recovery of the rendered image. Canvas recovery creates a static PNG; it **does not** preserve animations, EXIF, or original compression.
-3. For a Discord CDN image that cannot be recovered from the page, optionally crop an **entirely visible** image from Firefox's foreground tab screenshot. This is only a last resort and may be reduced resolution, may include visual overlays, and does not retain animation. Enabled by default; disable this in Settings for original-only / pixel recovery.
+## Settings
 
-**Important:** The extension does **not** directly read Firefox's disk or memory cache via a special API. A decoded image that is still displayed can sometimes be recovered, but not always. If the image is neither recoverable from the rendered page nor from its still-valid URL, there is no guaranteed way to obtain the original bytes. Opening an image in its own tab often makes canvas recovery more likely to work. Some webpages prevent access to image contents; this tool does not bypass authentication or authorization.
+| Setting | What it does |
+| --- | --- |
+| API token | Authenticates uploads to your ImgChest account. Stored locally in your Firefox profile. |
+| ImgChest username | Optional; helps with the alternate API-token check. |
+| After uploading | Open post in foreground (default), background, or not at all. |
+| Post visibility | Hidden (default), Public, or Secret. |
+| Default content rating | SFW (default) or NSFW. |
+| Filename as title | Optionally generate post titles from image filenames. |
+| Discord screenshot fallback | Last-resort recovery for a fully visible Discord image when the original can't be downloaded. |
+| Export / Import settings | Save and restore a portable JSON settings backup. |
 
-## Mozilla data-collection declaration
+**Your settings are saved locally** and should survive normal in-place updates with the same extension ID. However, **removing a temporary extension can erase its settings**. Before replacing a temporary build, open **Settings → Local settings backup → Export saved settings (.json)**. After reloading the extension, use **Import settings (.json)**.
 
-From v0.1.4, `manifest.json` declares `authenticationInfo` and `websiteContent` in `browser_specific_settings.gecko.data_collection_permissions.required`. These categories cover the ImgChest API token and the specific image that you choose to upload. This does **not** mean background browsing surveillance or telemetry; ChestDrop transmits images only when you explicitly invoke an upload. See [Privacy notice](PRIVACY.md) for the complete disclosure.
+> [!CAUTION]
+> Backups that include your API token store it **in plain text**. Keep those backup files private. You can uncheck **Include my API token in the backup** before exporting.
 
-Firefox 140 or newer is required, so Mozilla can show its built-in consent prompts for data transmission. The Firefox extension ID remains unchanged to preserve user settings across in-place updates.
+## Troubleshooting
 
-## Privacy, permissions, and security
+**“Test API key” reports HTTP 404**
 
-- `menus`: Adds context-menu upload commands.
-- `storage`: Stores your token and preferences using **`browser.storage.local`**, not Sync; keeps the last post URL. Settings backups are explicit user-requested downloads, not automatically synced.
-- `tabs`, `activeTab`, `scripting`: Detects the image and tries to read a user-selected image only when asked.
-- `notifications`: Reports upload results and errors.
-- `<all_urls>` host access: Lets an extension background script download a user-selected image from arbitrary websites, including CDN domains, and allows on-demand same-tab image extraction. This is a broad Firefox permission, but the code does not collect browsing history, scrape websites in the background, or download anything without a user-initiated upload action.
-- `https://api.imgchest.com/*`: Lets the extension authenticate and upload.
-- The token is only sent to `https://api.imgchest.com/v1/post`, `https://api.imgchest.com/v1/users/me`, and (when using username fallback) `https://api.imgchest.com/v1/user/{username}` in a Bearer header, with HTTP redirects disallowed for authenticated calls.
-- The source image is sent to ImgChest, so do not upload material you lack the right to share. Token storage is not encryption at rest: someone with full access to your Firefox profile could potentially read it. Revoke tokens from ImgChest if compromised.
-- Individual files over **32 MiB** are blocked by ChestDrop's own defensive memory limit; this is NOT a statement of the website's maximum upload size. Uploads may be subject to additional ImgChest constraints.
+ImgChest may return a 404 for the documented account-check endpoint. This is **not proof that your token is invalid**. Enter your ImgChest username in Settings and try the alternate check, or attempt a normal upload. A successful normal upload confirms that the upload endpoint accepts the token.
 
-## API interface
+**An image from Discord won't upload**
 
-- Verify token: `GET https://api.imgchest.com/v1/users/me` with `Authorization: Bearer TOKEN`. If this returns 404/405, optionally use `GET https://api.imgchest.com/v1/user/{your-username}`. For a successful fallback, the extension requires profile fields documented as *private to the account owner*; a generic public profile response is **not** considered verification. Neither test creates a post.
-- A 404/405 or a public-only profile returns **inconclusive**, never **token invalid**. A clear 401/403 indicates rejection. If both lookups are unavailable, try a normal image upload to see whether the upload API accepts the token.
-- Create post: `POST https://api.imgchest.com/v1/post` as multipart form data with `images[]` and `privacy`, optionally `title`, and `nsfw` (`true` or `false`), which is independent of visibility.
-- Open post: `https://imgchest.com/p/<id>` from returned JSON `data.id`.
+Discord attachment links can expire. ChestDrop first attempts to fetch the original image, then may recover rendered image pixels or (if enabled) a screenshot of a fully visible Discord image. These fallbacks can produce a static or lower-resolution image and **cannot guarantee recovery**. Try opening the image in its own tab before uploading.
 
-Official documentation: [Authorization](https://imgchest.com/docs/api/1.0/general/authorization), [Post endpoint](https://imgchest.com/docs/api/1.0/endpoints/post), [Current User endpoint](https://imgchest.com/docs/api/1.0/endpoints/user).
+**ChestDrop disappears when Firefox closes**
 
-## File layout
+You're using a temporary, unsigned development build. Firefox removes temporary add-ons when it restarts. Permanent installation requires a Mozilla-signed version.
 
-```
-manifest.json      Firefox MV3 metadata and permissions
-background.js      Context menu, download, upload, tab/notification handling
-image-reader.js    On-demand image/document extraction, including canvas recovery
-shared.js          Safety checks, filenames, image MIME sniffing, API helpers
-popup.*            Toolbar popup and recent-post link
-options.*          Token and post behavior settings; JSON backup export/import
-style.css          Local popup/settings styles
-icons/             Bundled PNG extension icons
-tests/             Offline Node.js tests, no token required
-```
+**My settings disappeared after an update**
 
-## Testing / development
+Replacing a temporary build by removing and reinstalling it may delete local extension data. Export your settings **before** removing the extension and import them after reinstalling. In-place signed updates should retain your settings.
 
-Run `node tests/test.js` with Node.js 18+ to exercise image helpers and mocked API upload/tab behavior. This does **not** send requests to ImgChest.
+**No new tab appeared after uploading**
 
-For browser integration, load temporarily and test a direct PNG, embedded JPG, animated GIF, valid Discord URL, and an expired Discord URL that's still displayed. Actual API testing requires your personal token; none is included with this release.
+Check **Settings → After uploading**. You may have chosen background-tab or no-tab mode. You can also check the most recent upload in the toolbar popup.
 
-## Known limitations in this first build
+## Privacy and permissions
 
-- Only **one selected image per new post**; no batch queue or gallery management yet.
-- Direct image downloads may fail for logged-in images requiring cookies (the extension deliberately sends `credentials: omit`).
-- Private/blob and cross-origin images cannot always be extracted by content scripts.
-- Expired Discord CDN signed URLs are not recoverable if Firefox no longer has accessible decoded pixels or if the image is partly offscreen and requires screenshot fallback.
-- JPEG/PNG/GIF/WebP/BMP/AVIF are detected via file signatures. SVG and video files are not part of this image uploader.
-- The screenshot fallback is intentionally limited to Discord CDN images and may not be faithful to the original.
-- ImgChest endpoint behavior and size restrictions can change; a real-token test is required before claiming confirmed live upload success. Specifically, a user reported HTTP 404 on the documented current-user verification route in v0.1.0; this build adds a documented read-only profile fallback and never calls an upload endpoint during the token test.
+ChestDrop **does not include advertising, analytics, or telemetry**. It stores your token and preferences in Firefox's local extension storage. When you explicitly upload an image, it sends that selected image, your chosen post options, and your API token to ImgChest. Testing the token also contacts the ImgChest API.
 
-MIT license; see `LICENSE`. Not affiliated with ImgChest or Discord.
+ChestDrop requests access to website images so that you can upload images from arbitrary webpages. It does not automatically upload images or monitor your browsing history.
+
+Read the [full privacy notice](PRIVACY.md) for details, including Mozilla's authentication and website-content transmission disclosures.
+
+## Current limitations
+
+- Firefox **Desktop** only; Firefox for Android is not currently supported.
+- One image per post; bulk/gallery uploads are not yet implemented.
+- Supported image formats: JPEG, PNG, GIF, WebP, BMP, and AVIF. SVG and video uploads are not supported.
+- ChestDrop has a **32 MiB per-image safety limit**, independent of any ImgChest server limits.
+- Images requiring a website login, restricted URLs, or expired Discord attachments may not be retrievable.
+- Browser-image or screenshot recovery may lose the original format, metadata, animation, or resolution.
+
+## Feedback and development
+
+Found a bug or have a feature request? [Open a GitHub issue](https://github.com/BlackShuck89/ChestDrop/issues). For development builds and automated test results, see [GitHub Actions](https://github.com/BlackShuck89/ChestDrop/actions).
+
+ChestDrop is open source under the [MIT License](LICENSE).
+
+---
+
+*ChestDrop is an independent, unofficial ImgChest client. It is not affiliated with or endorsed by ImgChest, Discord, or Mozilla.*
