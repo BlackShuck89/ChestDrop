@@ -1,0 +1,22 @@
+name: Verify ChestDrop
+on:
+  push:
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run offline tests
+        run: |
+          node tests/test.js
+          node tests/test-options.js
+      - name: Package unsigned XPI
+        run: zip -r ChestDrop-unsigned.xpi manifest.json background.js image-reader.js shared.js options.html options.js popup.html popup.js style.css LICENSE icons
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ChestDrop-unsigned
+          path: ChestDrop-unsigned.xpi
