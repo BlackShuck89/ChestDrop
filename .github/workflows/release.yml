@@ -1,0 +1,113 @@
+name: Publish GitHub Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "AMO-approved version (e.g. 0.1.4)"
+        required: true
+        type: string
+  push:
+    branches:
+      - main
+    paths:
+      - CHANGELOG.md
+
+permissions:
+  contents: write
+
+concurrency:
+  group: chestdrop-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test extension before publishing
+        run: |
+          node --check background.js
+          node --check image-reader.js
+          node --check shared.js
+          node --check options.js
+          node --check popup.js
+          node tests/test.js
+          node tests/test-options.js
+          node scripts/check_manifest.js
+      - name: Confirm public AMO version and prepare notes
+        id: prepare
+        env:
+          REQUESTED_VERSION: ${{ inputs.version || '' }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          python - <<'PY'
+          import json, os, re, sys, urllib.request
+          from pathlib import Path
+
+          version = json.loads(Path("manifest.json").read_text(encoding="utf-8"))["version"]
+          requested = os.environ.get("REQUESTED_VERSION", "").strip()
+          if requested and requested != version:
+              sys.exit(f"Requested version {requested} does not match manifest version {version}.")
+          if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+(?:[-.][A-Za-z0-9.-]+)?", version):
+              sys.exit(f"Unexpected version syntax: {version}")
+
+          changelog = Path("CHANGELOG.md").read_text(encoding="utf-8")
+          section = re.search(r"(?ms)^## \[" + re.escape(version) +
+                              r"\][^\n]*\n(.*?)(?=^## |\Z)", changelog)
+          if not section:
+              sys.exit(f"CHANGELOG.md has no entry for {version}.")
+          notes = section.group(1).strip()
+
+          # Do not publish GitHub releases before the equivalent version is
+          # publicly available on Mozilla's signed AMO distribution channel.
+          url = "https://addons.mozilla.org/api/v5/addons/addon/chestdrop-for-imgchest/"
+          request = urllib.request.Request(url, headers={
+              "Accept": "application/json",
+              "User-Agent": "ChestDrop-GitHub-Release/1.0"
+          })
+          try:
+              with urllib.request.urlopen(request, timeout=20) as response:
+                  published = json.load(response)
+              amo_version = str(published.get("current_version", {}).get("version", ""))
+          except Exception as error:
+              print(f"::warning::Unable to verify public AMO version: {error}")
+              if os.environ.get("EVENT_NAME") == "workflow_dispatch":
+                  sys.exit("AMO verification is required for a manual release.")
+              amo_version = ""
+
+          output = Path(os.environ["GITHUB_OUTPUT"])
+          if amo_version != version:
+              print(f"::notice::AMO currently publishes {amo_version or 'unknown'}; "
+                    f"source is {version}. GitHub release not created.")
+              with output.open("a") as f:
+                  f.write("should_publish=false\n")
+              sys.exit(0)
+
+          url = "https://addons.mozilla.org/en-US/firefox/addon/chestdrop-for-imgchest/"
+          release_notes = (notes + "\n\n"
+              + f"**Official signed installation and updates:** [Mozilla Firefox Add-ons]({url}).\n\n"
+              + "This GitHub release provides source code and change notes. "
+                "Unsigned GitHub Actions artifacts are developer builds, not signed user downloads.\n")
+          Path("github-release-notes.md").write_text(release_notes, encoding="utf-8")
+          with output.open("a") as f:
+              f.write(f"tag=v{version}\nshould_publish=true\n")
+          print(f"Public AMO version {version} confirmed; release ready.")
+          PY
+      - name: Create version tag and GitHub release
+        if: steps.prepare.outputs.should_publish == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.prepare.outputs.tag }}
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "Release $RELEASE_TAG already exists. Nothing to publish."
+          else
+            gh release create "$RELEASE_TAG" \
+              --target "$GITHUB_SHA" \
+              --title "ChestDrop $RELEASE_TAG" \
+              --notes-file github-release-notes.md
+          fi
