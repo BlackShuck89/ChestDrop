@@ -1,6 +1,6 @@
 # Changelog
 
-All notable user-visible changes to ChestDrop are recorded here. Version numbers follow the Firefox extension's `manifest.json`. Published versions are distributed through [Mozilla Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/chestdrop-for-imgchest/); earlier versions below were development builds.
+All notable user-visible changes to ChestDrop are recorded here. Version numbers follow the Firefox extension's `manifest.json`. Published versions are distributed through [Mozilla Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/chestdrop-for-imgchest/), with corresponding [GitHub Releases](https://github.com/BlackShuck89/ChestDrop/releases) for source snapshots and change notes; earlier versions below were development builds.
 
 ## [0.1.4] — 2026-10-21
 
