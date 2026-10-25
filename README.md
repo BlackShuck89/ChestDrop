@@ -8,12 +8,14 @@
 
 Right-click an image, choose **Upload image to ImgChest**, and ChestDrop handles the rest.
 
-[Features](#features) · [Installation](#installation) · [Getting started](#getting-started) · [Settings](#settings) · [Troubleshooting](#troubleshooting)
+**[Install ChestDrop from Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/chestdrop-for-imgchest/)**
+
+[Features](#features) · [Installation](#installation) · [Getting started](#getting-started) · [Settings](#settings) · [Troubleshooting](#troubleshooting) · [Changelog](CHANGELOG.md)
 
 </div>
 
 > [!NOTE]
-> **ChestDrop is currently a desktop Firefox extension (Firefox 140 or newer).** Version 0.1.4 is an early development release. The GitHub Actions builds are **unsigned** and intended for temporary testing; they are not permanently installable in standard Firefox until signed by Mozilla. Firefox for Android is not supported.
+> **ChestDrop v0.1.4 is published and signed on [Mozilla Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/chestdrop-for-imgchest/).** It supports Firefox Desktop 140 or newer. Firefox for Android is not currently supported. GitHub Actions artifacts are separate, **unsigned developer builds**.
 
 ## Features
 
@@ -29,16 +31,21 @@ Right-click an image, choose **Upload image to ImgChest**, and ChestDrop handles
 
 ## Installation
 
-### Development build (current distribution)
+### Recommended: Mozilla Firefox Add-ons
 
-1. Open the [GitHub Actions build page](https://github.com/BlackShuck89/ChestDrop/actions/workflows/check.yml) and select a successful **Verify and build ChestDrop** run.
-2. Under **Artifacts**, download **ChestDrop-unsigned** and extract the `.xpi` from the downloaded ZIP.
-3. In Firefox Desktop, open `about:debugging#/runtime/this-firefox`.
-4. Select **Load Temporary Add-on…**, then select the extracted `.xpi` file (or `manifest.json` from a downloaded source checkout).
+1. Open the official **[ChestDrop for ImgChest listing on Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/chestdrop-for-imgchest/)**.
+2. Click **Add to Firefox** and approve the permissions prompted by Firefox.
+3. Open the ChestDrop toolbar icon → **Settings**, enter your ImgChest personal access token, and save your preferences.
 
-**Important:** Temporary add-ons are removed when Firefox restarts. For normal, persistent installation, ChestDrop must first be signed through Mozilla's add-on signing process. An unsigned XPI generally cannot be installed permanently in standard Firefox.
+This is the **signed, publicly released build**. It stays installed between browser restarts, and updates distributed through Mozilla can update it in place while preserving your locally stored settings.
 
-You can also get the project source from **Code → Download ZIP** on this repository.
+### For developers: unsigned test builds
+
+If you're developing or testing unreleased changes, download the `ChestDrop-unsigned` build artifact from a successful run on [GitHub Actions](https://github.com/BlackShuck89/ChestDrop/actions/workflows/check.yml) and extract its `.xpi`. Open `about:debugging#/runtime/this-firefox`, click **Load Temporary Add-on**, and select the XPI or a source checkout's `manifest.json`.
+
+**Unsigned test builds are temporary and disappear when Firefox restarts.** Removing a temporary build can also clear its settings, so export a settings backup first. Don't replace the signed public installation with an unsigned development build unless you specifically intend to test it.
+
+The project source is available via **Code → Download ZIP** or by cloning this repository.
 
 ## Getting started
 
@@ -68,7 +75,7 @@ Open the image URL in Firefox, click the **ChestDrop toolbar icon**, and select 
 | Discord screenshot fallback | Last-resort recovery for a fully visible Discord image when the original can't be downloaded. |
 | Export / Import settings | Save and restore a portable JSON settings backup. |
 
-**Your settings are saved locally** and should survive normal in-place updates with the same extension ID. However, **removing a temporary extension can erase its settings**. Before replacing a temporary build, open **Settings → Local settings backup → Export saved settings (.json)**. After reloading the extension, use **Import settings (.json)**.
+**Your settings are saved locally** and normally survive signed, in-place updates from Mozilla. However, **removing a temporary development installation can erase its settings**. Before replacing a temporary build, open **Settings → Local settings backup → Export saved settings (.json)**. After reloading the extension, use **Import settings (.json)**.
 
 > [!CAUTION]
 > Backups that include your API token store it **in plain text**. Keep those backup files private. You can uncheck **Include my API token in the backup** before exporting.
@@ -85,7 +92,7 @@ Discord attachment links can expire. ChestDrop first attempts to fetch the origi
 
 **ChestDrop disappears when Firefox closes**
 
-You're using a temporary, unsigned development build. Firefox removes temporary add-ons when it restarts. Permanent installation requires a Mozilla-signed version.
+You likely installed an unsigned **temporary development build** using `about:debugging`. Install the [official Mozilla-signed release](https://addons.mozilla.org/en-US/firefox/addon/chestdrop-for-imgchest/) instead; it stays installed when Firefox restarts.
 
 **My settings disappeared after an update**
 
@@ -114,7 +121,13 @@ Read the [full privacy notice](PRIVACY.md) for details, including Mozilla's auth
 
 ## Feedback and development
 
-Found a bug or have a feature request? [Open a GitHub issue](https://github.com/BlackShuck89/ChestDrop/issues). For development builds and automated test results, see [GitHub Actions](https://github.com/BlackShuck89/ChestDrop/actions).
+Found a bug or have a feature request? [Open a GitHub issue](https://github.com/BlackShuck89/ChestDrop/issues).
+
+- **Install and update ChestDrop:** [Mozilla Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/chestdrop-for-imgchest/).
+- **See what changed:** [Changelog](CHANGELOG.md) and [GitHub Releases](https://github.com/BlackShuck89/ChestDrop/releases).
+- **Test unreleased changes:** [GitHub Actions](https://github.com/BlackShuck89/ChestDrop/actions) — unsigned artifacts, not signed AMO updates.
+
+Release notes and GitHub releases follow the versions published on Mozilla Add-ons; see [Release process](docs/RELEASING.md) for maintainer instructions.
 
 ChestDrop is open source under the [MIT License](LICENSE).
 
